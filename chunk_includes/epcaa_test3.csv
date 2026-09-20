@@ -1,0 +1,17 @@
+﻿block,item_id,trial_type,guise,audio,image,topic,sentence,question
+1,,audio,app0,Shelby_Southern2_NoCollege_EPCAgreement.wav,w1_face.png,,,
+1,test1,spr,app1,,w1_face.png,back to Niagra Falls,she said the van for the tourist finally were left parked a mile away.,Was there more than one van a mile away?
+1,test2,spr,app1,,w1_face.png,fun fact of the day,did you know that the inventor of the motorcycles actually was in the news today.,Was there more than one inventor in the news?
+1,test3,spr,app1,,w1_face.png,nice,last week a nurse saved a patient from nearly falling out of her bed.,Did the patient fall out of her bed?
+2,,audio,nova1,Ashley_Northern1_NoCollege_EPCAgreement.wav,w2_face.png,,,
+2,test1,spr,nova1,,w2_face.png,back to Niagra Falls,she said the van for the tourist finally were left parked a mile away.,Was there more than one van a mile away?
+2,test2,spr,nova1,,w2_face.png,fun fact of the day,did you know that the inventor of the motorcycles actually was in the news today.,Was there more than one inventor in the news?
+2,test3,spr,nova1,,w2_face.png,nice,last week a nurse saved a patient from nearly falling out of her bed.,Did the patient fall out of her bed?
+3,,audio,app2,Hayley_Southern1_NoCollege_EPCAgreement.wav,w3_face.png,,,
+3,test1,spr,app2,,w3_face.png,back to Niagra Falls,she said the van for the tourist finally were left parked a mile away.,Was there more than one van a mile away?
+3,test2,spr,app2,,w3_face.png,fun fact of the day,did you know that the inventor of the motorcycles actually was in the news today.,Was there more than one inventor in the news?
+3,test3,spr,app2,,w3_face.png,nice,last week a nurse saved a patient from nearly falling out of her bed.,Did the patient fall out of her bed?
+4,,audio,nova2,Madison_Northern2_NoCollege_EPCAgreement.wav,w4_face.png,,,
+4,test1,spr,nova3,,w4_face.png,back to Niagra Falls,she said the van for the tourist finally were left parked a mile away.,Was there more than one van a mile away?
+4,test2,spr,nova4,,w4_face.png,fun fact of the day,did you know that the inventor of the motorcycles actually was in the news today.,Was there more than one inventor in the news?
+4,test3,spr,nova5,,w4_face.png,nice,last week a nurse saved a patient from nearly falling out of her bed.,Did the patient fall out of her bed?

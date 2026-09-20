@@ -1,5 +1,5 @@
-item_id,topic,sentence,question,Answer,trial_type
-Practice1,"Hey, getting coffee soon!",I think I want an iced coffee,Is Ashley going to get coffee?,Yes,practice
+item_id,topic,sentence,question,answer,trial_type
+Practice1,"Hey, getting coffee soon!",I think I want an iced coffee,Is Emily going to get coffee?,Yes,practice
 Practice2,About yesterday,My green winter coat was left on the back of the chair,Was the coat blue?,No,practice
 Practice3,Group study session today?,We are meeting at the library around 4:00.,Are they meeting at the library?,Yes,practice
 Practice4,Just got back from the grocery store,We bought fresh apples and oranges,Did she buy bananas?,No,practice

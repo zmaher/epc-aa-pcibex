@@ -58,9 +58,11 @@ newTrial("instructions",
     ,
     newText("Then, you will answer questions about each message.")
     ,
-    newText("Press the spacebar to progress through the words.")
+    newText("Press the spacebar to progress through the words.\n\n")
     ,
-    newText("The first few texts come from Emily and are meant to help you practice.\nAfter that, you'll play audio clips to get introduced to the other people in the study.")
+    newText("The first few texts come from Emily and are meant to help you practice.")
+    ,
+    newText("After that, you'll play audio clips to get introduced to the other people in the study.")
     ,
     newButton("Start")
         .center()
@@ -75,7 +77,7 @@ newTrial("instructions",
 
 
 Template(GetTable("epcaa_practice.csv"),
-    row => newTrial("practice","
+    row => newTrial("practice",
         // Display name Header
         newCanvas("headerCanvas", 500, 50)
             .css({

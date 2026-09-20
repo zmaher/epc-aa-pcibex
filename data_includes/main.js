@@ -117,14 +117,28 @@ Template(GetTable("epcaa_all_lists.csv").filter("trial_type", "audio"),
             .play()
             .wait()
         ,
-        getCanvas("guiseAudioCanvas")
-            .add(250, 180, getButton("nextButton"))
-        ,
-        getButton("nextButton")
-            .wait()
-        ,
+        // Remove audio canvas to clear the screen for the question
         getCanvas("guiseAudioCanvas")
             .remove()
+        ,
+        // Display Audio Comprehension Question
+        newText("audioQ", row.audio_question)
+            .bold()
+            .center()
+            .print()
+        ,
+        newScale("audioChoices", row.audio_answer, row.audio_alt1, row.audio_alt2, row.audio_alt3)
+            .labelsPosition("right")
+            .vertical()
+            .shuffle() // Randomizes the answer order
+            .center()
+            .print()
+            .wait()
+            .log() // Logs the response to PCIbex results
+        ,
+        getText("audioQ").remove()
+        ,
+        getScale("audioChoices").remove()
         ,
         getCanvas("headerCanvas")
             .remove()
@@ -140,6 +154,9 @@ Template(GetTable("epcaa_all_lists.csv").filter("trial_type", "audio"),
         getText("instructions")
             .remove()
     )
+    .log("audio_question", row.audio_question)
+)
+
 )
 
 // ==========================================

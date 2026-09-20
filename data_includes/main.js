@@ -68,7 +68,14 @@ newTrial("instructions",
 // 1. AUDIO INTROS (Filtered from Master CSV)
 // ==========================================
 Template(GetTable("epcaa_all_lists.csv").filter("trial_type", "audio"),
-    row => newTrial("audio-" + row.block, // Dynamic label: "audio-1", "audio-2", etc.
+    row => {
+        
+        // Randomize choices
+        let choices = [row.audio_answer, row.audio_alt1, row.audio_alt2, row.audio_alt3].sort(() => Math.random() - 0.5);
+        
+        return newTrial("audio-" + row.block, // Dynamic label: "audio-1", "audio-2", etc.
+    
+        
         // Display name Header
         newCanvas("headerCanvas", 500, 50)
             .css({
@@ -127,10 +134,9 @@ Template(GetTable("epcaa_all_lists.csv").filter("trial_type", "audio"),
             .center()
             .print()
         ,
-        newScale("audioChoices", row.audio_answer, row.audio_alt1, row.audio_alt2, row.audio_alt3)
+        newScale("audioChoices", ...choices)
             .labelsPosition("right")
             .vertical()
-            .shuffle() // Randomizes the answer order
             .center()
             .print()
             .wait()
@@ -155,9 +161,9 @@ Template(GetTable("epcaa_all_lists.csv").filter("trial_type", "audio"),
             .remove()
     )
     .log("audio_question", row.audio_question)
+    }
 )
 
-)
 
 // ==========================================
 // 2. SPR TRIALS (Filtered from Master CSV)

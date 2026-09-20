@@ -1,4 +1,6 @@
-PennController.ResetPrefix(null); 
+PennController.ResetPrefix(null);
+
+PennController.DebugOff()
 
 // Sequence the blocks explicitly: Audio intro followed by randomized SPR items for that block
 Sequence(
@@ -182,7 +184,7 @@ Template(GetTable("epcaa_practice.csv"),
     .log("topic", row.topic)
     .log("sentence", row.sentence)
     .log("question", row.question)
-    .log("answer", row.Answer)
+    .log("answer", row.answer)
     .log("trial_type", row.trial_type)
 )
 

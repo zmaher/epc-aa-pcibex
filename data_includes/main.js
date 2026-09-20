@@ -3,7 +3,7 @@ PennController.ResetPrefix(null);
 // Sequence the blocks explicitly: Audio intro followed by randomized SPR items for that block
 Sequence(
     "consent",
-    "instructions", 
+    "instructions", "practice",
     "audio-1", randomize("spr-1"), 
     "audio-2", randomize("spr-2"), 
     "audio-3", randomize("spr-3"), 
@@ -58,11 +58,133 @@ newTrial("instructions",
     ,
     newText("Then, you will answer questions about each message.")
     ,
+    newText("Press the spacebar to progress through the words.")
+    ,
+    newText("The first few texts come from Emily and are meant to help you practice.\nAfter that, you'll play audio clips to get introduced to the other people in the study.")
+    ,
     newButton("Start")
         .center()
         .print()
         .wait()
 )
+
+
+// ==============================
+// Practice
+// ==============================
+
+
+Template(GetTable("epcaa_practice.csv"),
+    row => newTrial("practice","
+        // Display name Header
+        newCanvas("headerCanvas", 500, 50)
+            .css({
+                "background-color": "#EFEFEF",
+                "border": "1px solid #CCC",
+                "border-radius": "4px",
+                "margin-bottom": "15px",
+                "display": "flex",              // Turns the canvas into a flex container
+                "justify-content": "center",   // Centers horizontally
+                "align-items": "center"        // Centers vertically
+            })
+            .center()
+            .add("center", "center", 
+                newText("headerName", "Emily")
+                    .bold()
+                    .css("font-size", "1.4em")
+            )
+            .print()
+        ,
+        
+        // First message: single bubble with topic text
+        newImage("sb1topicimg", "sb_thin.png")
+            .settings.size(425, 57) 
+        ,
+        newImage("face1", "w0_face.png")
+            .settings.size(100, 100)
+        ,
+        newText("sb1topictext", row.topic)
+        ,
+        newCanvas("sb1topiccanvas", 500, 258)
+            .center()
+            .add(75, 107, getImage("sb1topicimg"))
+            .add(0, 158, getImage("face1"))
+            .add(112, 120, getText("sb1topictext"))
+            .print()
+        ,
+        newTimer(1500)
+            .start()
+            .wait()
+        ,
+        getCanvas("sb1topiccanvas").remove()
+        ,
+        // SPR part    
+        newImage("sb1", "sb_double.png")
+            .settings.size(425, 170)
+        ,
+        newImage("face2", "w0_face.png")
+            .settings.size(100, 100)
+        ,
+        newController("ds1", "DashedSentence", {s: row.sentence})
+        ,
+        newText("spaceReminder", "Press SPACEBAR to continue.")
+            .css("font-size", "0.8em")
+        ,
+        newCanvas("sprcanv", 500, 258)
+            .center()
+            .add(75, 0, getImage("sb1"))
+            .add(0, 158, getImage("face2"))
+            .add(110, 25, getText("sb1topictext"))
+            .add(110, 60, getController("ds1"))
+            .add(200, 220, getText("spaceReminder"))
+            .print()
+        ,
+        getController("ds1")
+            .wait()
+            .log()
+        ,
+        getCanvas("sprcanv").remove()
+        ,
+        getCanvas("headerCanvas").remove()
+        ,
+        // Ask comprehension question
+        newText("questionText", row.question)
+            .center()
+            .bold()
+            .print()
+        ,
+        newText("keyReminders", "Yes: [F]       |       No: [J]")
+            .css("white-space", "pre")
+            .center()
+            .print()
+        ,
+        newKey("comp_question", "FYJNfyjn")
+            .wait()
+            .log() 
+        ,
+        getText("keyReminders")
+            .remove()
+        ,
+        getText("questionText")
+            .remove()
+        ,
+        newText("advanceText", "Press SPACEBAR to continue.")
+            .center()
+            .print()
+        ,
+        newKey("advanceTrial", " ")
+            .wait()
+    )
+    //Log everything from the spreadsheet
+    .log("item_id", row.item_id)
+    .log("topic", row.topic)
+    .log("sentence", row.sentence)
+    .log("question", row.question)
+    .log("answer", row.Answer)
+    .log("trial_type", row.trial_type)
+)
+
+
 
 // ==========================================
 // 1. AUDIO INTROS (Filtered from Master CSV)

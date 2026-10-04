@@ -45,6 +45,11 @@ newTrial("consent",
     ,
     // Simple button to move past the trial
     newButton("continue", "I Consent.")
+        .css({
+            "font-size": "1.2em",
+            "padding": "12px 24px"
+        })
+        .center()
         .print()
         .wait()
 )
@@ -52,19 +57,18 @@ newTrial("consent",
 
 // Instructions
 newTrial("instructions", 
-    defaultText.center().print()
+    //defaultText.center().print()
+    defaultText.css("text-align", "center").center().print()
     ,
-    newText("Welcome!")
+    newText("Welcome!<br><br>")
     ,
     newText("In this study, you will read text messages from a few different people.")
     ,
     newText("Then, you will answer questions about each message.")
     ,
-    newText("Press the spacebar to progress through the words.\n\n")
+    newText("Press the spacebar to progress through the words.<br><br>")
     ,
-    newText("The first few texts come from Emily and are meant to help you practice.")
-    ,
-    newText("After that, you'll play audio clips to get introduced to the other people in the study.")
+    newText("The first few texts come from Emily and are meant to help you practice.<br>After that, you'll play audio clips to get introduced to the other people in the study.")
     ,
     newButton("Start")
         .center()
@@ -87,7 +91,7 @@ Template(GetTable("epcaa_practice.csv"),
                 "border": "1px solid #CCC",
                 "border-radius": "4px",
                 "margin-bottom": "15px",
-                "display": "flex",              // Turns the canvas into a flex container
+                "display": "flex",                // Turns the canvas into a flex container
                 "justify-content": "center",   // Centers horizontally
                 "align-items": "center"        // Centers vertically
             })
@@ -200,7 +204,28 @@ Template(GetTable("epcaa_all_lists.csv").filter("trial_type", "audio"),
         let choices = [row.audio_answer, row.audio_alt1, row.audio_alt2, row.audio_alt3].sort(() => Math.random() - 0.5);
         
         return newTrial("audio-" + row.block, // Dynamic label: "audio-1", "audio-2", etc.
-    
+        
+        // Warn participant that new speaker is coming
+        newText("intro_text", "Now you’ll be reading texts from a new person. Press the “Start Introduction” button to learn about them. After that, you'll answer a question about what you heard.")
+            .center()
+            .print()
+        ,
+        newText("blank_space", "<br>")
+            .print()
+        ,
+        // Display "Play Introduction" button and wait for click
+        newButton("play_intro_btn", "Start Introduction")
+            .center()
+            .print()
+            .wait()
+        ,
+        // Clear the initial instruction and button from screen
+        getText("intro_text").remove()
+        ,
+        getText("blank_space").remove()
+        ,
+        getButton("play_intro_btn").remove()
+        ,
         
         // Display name Header
         newCanvas("headerCanvas", 500, 50)

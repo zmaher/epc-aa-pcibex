@@ -3,8 +3,12 @@ PennController.ResetPrefix(null);
 PennController.DebugOff()
 
 // Sequence the blocks explicitly: Audio intro followed by randomized SPR items for that block
+// NEW: a headphone check ("hc-...") now runs right after consent, before the instructions.
+//      Results are sent once right after the check (so failed checks are saved too),
+//      and again at the end of the study.
 Sequence(
     "consent",
+    "hc-intro", "hc-calibration", randomize("hc"), "hc-evaluate", SendResults(), "hc-result",
     "instructions", "practice",
     "audio-1", randomize("spr-1"), 
     "audio-2", randomize("spr-2"), 
@@ -54,6 +58,155 @@ newTrial("consent",
         .wait()
 )
 
+
+
+// ==========================================================================
+// HEADPHONE CHECK  (added)
+// Based on the McDermott Lab HeadphoneCheck (Woods, Siegel, Traer & McDermott, 2017,
+// Attention, Perception & Psychophysics). 3-AFC task: "Which sound was SOFTEST?"
+// One of the three tones in each file is in antiphase across the stereo channels, so it is
+// much quieter over headphones than over loudspeakers. 6 trials; pass = at least 5 correct.
+// Audio files (in chunk_includes/): antiphase_HC_*.wav and noise_calib_stim.wav
+// ==========================================================================
+const HC_THRESHOLD       = 5;      // number correct (out of 6) needed to pass. Don't lower this.
+const HC_BLOCK_FAILURES  = true;   // true: participants who fail cannot continue
+const HC_STIMULI = [
+    {file: "antiphase_HC_ISO.wav", correct: 2},
+    {file: "antiphase_HC_IOS.wav", correct: 3},
+    {file: "antiphase_HC_SOI.wav", correct: 1},
+    {file: "antiphase_HC_SIO.wav", correct: 1},
+    {file: "antiphase_HC_OSI.wav", correct: 2},
+    {file: "antiphase_HC_OIS.wav", correct: 3}
+];
+const HC_LABELS = ["FIRST sound was SOFTEST", "SECOND sound was SOFTEST", "THIRD sound was SOFTEST"];
+
+newTrial("hc-intro",
+    newVar("hcTotalCorrect", 0).global()
+    ,
+    newVar("hcPassed", "no").global()
+    ,
+    newText("hc-intro-text",
+        "<p><b>Headphone check</b></p>" +
+        "<p>This study requires headphones. Please put on your headphones now " +
+        "(earbuds are fine) and find a quiet place.</p>" +
+        "<p>First you will set your volume, then you will do a short listening test.</p>")
+        .css("font-size", "22px").center().print()
+    ,
+    newButton("hc-intro-continue", "Continue").center().print().wait()
+)
+
+newTrial("hc-calibration",
+    newText("hc-cal-title", "<p><b>Level Calibration</b></p>").css("font-size", "24px").center().print()
+    ,
+    newText("hc-cal-1", "<p>First, set your computer volume to about 25% of maximum.</p>")
+        .css("font-size", "22px").center().print()
+    ,
+    newText("hc-cal-2",
+        "<p>Press the button, then turn up the volume on your computer until the " +
+        "calibration noise is at a loud but comfortable level.</p>")
+        .css("font-size", "22px").center().print()
+    ,
+    newAudio("hc-calib", "noise_calib_stim.wav")
+    ,
+    newButton("hc-play-cal", "Play calibration sound")
+        .center().print()
+        .callback(getAudio("hc-calib").play())
+    ,
+    newText("hc-cal-3",
+        "<p>You can play it as many times as you like. " +
+        "Press <b>Continue</b> when level calibration is complete.</p>")
+        .css("font-size", "20px").center().print()
+    ,
+    newButton("hc-cal-continue", "Continue")
+        .center().print()
+        .wait(getAudio("hc-calib").test.hasPlayed())   // only after playing it at least once
+)
+
+HC_STIMULI.forEach(s => {
+    newTrial("hc",
+        newText("hc-instr",
+            "<p>When you hit <b>Play</b>, you will hear three sounds separated by silences.</p>" +
+            "<p>Simply judge WHICH SOUND WAS SOFTEST (quietest): 1, 2, or 3?</p>" +
+            "<p>Test sounds can only be played once!</p>")
+            .css("font-size", "22px").center().print()
+        ,
+        newAudio("hc-tone", s.file)
+        ,
+        newButton("hc-play", "Play").center().print().wait()
+        ,
+        getButton("hc-play").remove()
+        ,
+        newText("hc-playing", "<p>Playing...</p>").css("font-size", "22px").center().print()
+        ,
+        getAudio("hc-tone").play().wait()      // waits until the sound has finished
+        ,
+        getText("hc-playing").remove()
+        ,
+        newText("hc-opt1", "<p>" + HC_LABELS[0] + "</p>").css("font-size", "22px").center().print()
+        ,
+        newText("hc-opt2", "<p>" + HC_LABELS[1] + "</p>").css("font-size", "22px").center().print()
+        ,
+        newText("hc-opt3", "<p>" + HC_LABELS[2] + "</p>").css("font-size", "22px").center().print()
+        ,
+        newSelector("hc-answer")
+            .add(getText("hc-opt1"), getText("hc-opt2"), getText("hc-opt3"))
+            .frame("solid 3px black")
+            .log()
+        ,
+        newButton("hc-next", "Continue")
+            .center().print()
+            .wait(getSelector("hc-answer").test.selected())   // an answer is required
+        ,
+        newVar("hcIsCorrect", 0).log()    // logged with its final value (1 = correct)
+        ,
+        getSelector("hc-answer").test.selected(getText("hc-opt" + s.correct))
+            .success(
+                getVar("hcIsCorrect").set(1),
+                getVar("hcTotalCorrect").set(v => v + 1)
+            )
+    )
+    .log("hc_audio", s.file)
+    .log("hc_correct_answer", s.correct)
+});
+
+// Score (no display)
+const hcPassTests = [];
+for (let k = HC_THRESHOLD; k <= HC_STIMULI.length; k++) {
+    hcPassTests.push(
+        getVar("hcTotalCorrect").test.is(k).success(getVar("hcPassed").set("yes"))
+    );
+}
+newTrial("hc-evaluate",
+    ...hcPassTests,
+    newTimer("hc-eval-pause", 10).start().wait()
+)
+.log("hc_total_correct", getVar("hcTotalCorrect"))
+.log("hc_passed", getVar("hcPassed"))
+
+// Result screen (shown after the first SendResults)
+newTrial("hc-result",
+    getVar("hcPassed").test.is("yes")
+        .success(
+            newText("hc-pass-msg",
+                "<p>Thank you, you passed the headphone check.</p>" +
+                "<p>Please keep your headphones on for the rest of the study.</p>")
+                .css("font-size", "22px").center().print()
+            ,
+            newButton("hc-pass-continue", "Continue").center().print().wait()
+        )
+        .failure(
+            newText("hc-fail-msg",
+                "<p>Sorry, it looks like you are not using headphones.</p>" +
+                (HC_BLOCK_FAILURES
+                    ? "<p>You cannot continue with this study. You can close this window now. Thank you for your time.</p>"
+                    : "<p>Please put on headphones before you continue.</p>"))
+                .css("font-size", "22px").center().print()
+            ,
+            (HC_BLOCK_FAILURES
+                ? newTimer("hc-hold", 86400000).start().wait()          // stay here: no way forward
+                : newButton("hc-fail-continue", "Continue").center().print().wait())
+        )
+)
 
 // Instructions
 newTrial("instructions", 

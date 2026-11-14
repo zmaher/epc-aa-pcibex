@@ -2,6 +2,15 @@ PennController.ResetPrefix(null);
 
 PennController.DebugOff()
 
+// Add dummy trials to leave space in progress bar for Qualtrics part
+const NUM_DUMMY_TRIALS = 100; 
+const dummyLabels = Array.from({ length: NUM_DUMMY_TRIALS }, (_, i) => `dummy_${i}`);
+
+dummyLabels.forEach(label => {
+    newTrial(label, newText("").print());
+});
+
+
 // Sequence the blocks explicitly: Audio intro followed by randomized SPR items for that block
 // NEW: a headphone check ("hc-...") now runs right after consent, before the instructions.
 //      Results are sent once right after the check (so failed checks are saved too),
@@ -19,7 +28,8 @@ Sequence(
     "audio-7", randomize("spr-7"), 
     "audio-8", randomize("spr-8"), 
     SendResults(), 
-    "end"
+    "end",
+    ...dummyLabels
 )
 
 Header(
